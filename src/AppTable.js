@@ -148,15 +148,16 @@ const AppTable = () => {
   const [updateTblData, setUpdateTblData] = useState(() => [...data]);
   const [validationErrors, setValidationErrors] = useState({});
 
-  const handleCreateAccount = () => {
+  const handleCreateAccount = (table) => {
     const obj = {
-      id: '9s41rp',
-      firstName: '',
-      lastName: '',
-      email: '',
-      age: 0,
-      state: 'Ohio',
-      isEdit: false
+      email: "",
+firstName: "",
+lastName: "",
+state: "California",
+      id: '9s41cpnm',
+      index: tableData.length,
+      isEdit: true,
+      isAdd: true
     };
     const arr = [...tableData];
     arr.push(obj);
@@ -185,6 +186,8 @@ const AppTable = () => {
     table.setEditingRow(null);
     const tblData = [...updateTblData];
     tblData[row.index].isEdit = false;
+    if(tblData[row.index].isAdd)
+    tblData[row.index].isAdd = false;
     setTableData([...tblData]);
     setUpdateTblData([...tblData]);
   }
@@ -246,6 +249,9 @@ const AppTable = () => {
         accessorKey: 'firstName',
         header: 'First Name',
         size: 140,
+        enableEditing: (obj) => {
+          return obj.original.isEdit ? true : false
+        },
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
         }),
@@ -254,6 +260,9 @@ const AppTable = () => {
         accessorKey: 'lastName',
         header: 'Last Name',
         size: 140,
+        enableEditing: (obj) => {
+          return obj.original.isEdit ? true : false
+        },
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
         }),
@@ -261,6 +270,9 @@ const AppTable = () => {
       {
         accessorKey: 'email',
         header: 'Email',
+        enableEditing: (obj) => {
+          return obj.original.isEdit ? true : false
+        },
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
           type: 'email',
@@ -270,6 +282,9 @@ const AppTable = () => {
         accessorKey: 'age',
         header: 'Age',
         size: 80,
+        enableEditing: (obj) => {
+          return obj.original.isEdit ? true : false
+        },
         muiTableBodyCellEditTextFieldProps: ({ cell }) => ({
           ...getCommonEditTextFieldProps(cell),
           type: 'number',
@@ -278,6 +293,9 @@ const AppTable = () => {
       {
         accessorKey: 'state',
         header: 'State',
+        enableEditing: (obj) => {
+          return obj.original.isEdit ? true : false
+        },
         muiTableBodyCellEditTextFieldProps: {
           select: true,
           children: states.map((state) => (
@@ -304,17 +322,9 @@ const AppTable = () => {
         }}
         columns={columns}
         data={tableData}
-        editingMode="row"
+        editingMode="table"
         enableColumnOrdering
         enableEditing
-				// enableSelectAll={false}
-				// enableMultiRowSelection={false}
-				// enableRowSelection={(row) => row.original.age}
-        // onEditingRowSave={handleSaveRowEdits}
-        // onEditingRowSave={handleSaveRow}
-        // onEditingRowCancel={handleCancelRowEdits}
-        // enableGlobalFilter={false}
-				// enableColumnFilters={false}
 				enableFullScreenToggle={false}
 				enableDensityToggle={false}
 				enableRowActions
@@ -333,7 +343,7 @@ const AppTable = () => {
               </IconButton>
             </Tooltip></>)}
             {row.original.isEdit && (<><Tooltip arrow placement="left" title="Close">
-              <IconButton onClick={() => handleClose(table, row)}>
+              <IconButton disabled={row.original.isAdd} onClick={() => handleClose(table, row)}>
 								<Close />
               </IconButton>
             </Tooltip>
@@ -351,7 +361,7 @@ const AppTable = () => {
 					}}>
           <Button
             color="success"
-            onClick={() => handleCreateAccount()}
+            onClick={() => handleCreateAccount(table)}
             variant="contained"
           >
             Create New Account
